@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Instantané</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="chat">
+    <h1>Chat Instantané</h1>
+    
+    <!-- Formulaire de choix de langue -->
+    <div id="languageForm">
+      <label for="languageSelect">Choisissez votre langue :</label>
+      <select id="languageSelect">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <!-- Ajoute d'autres langues ici -->
+      </select>
+      <button id="setLangBtn">Définir la langue</button>
+    </div>
+
+    <div id="usersConnected">Utilisateurs connectés : 0</div>
+
+    <ul id="messages"></ul>
+
+    <form id="usernameForm">
+      <input id="usernameInput" autocomplete="off" placeholder="Entrez votre nom d'utilisateur..." />
+      <button id="loginBtn">Se connecter</button>
+    </form>
+
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Tapez votre message ici..." />
+      <button id="sendBtn">Envoyer</button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
