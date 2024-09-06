@@ -1,0 +1,16 @@
+{
+  "name": "soket-io",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}

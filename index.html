@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Instantané</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+    #chat {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    #messages {
+      list-style-type: none;
+      padding: 0;
+      margin-bottom: 20px;
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      background-color: #f1f1f1;
+    }
+    #messages li {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #e1e1e1;
+      border-radius: 4px;
+      position: relative;
+    }
+    #messages .username {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    #messages .timestamp {
+      font-size: 0.8rem;
+      color: #888;
+      position: absolute;
+      bottom: 5px;
+      right: 10px;
+    }
+    #form, #usernameForm {
+      display: flex;
+    }
+    #input, #usernameInput {
+      flex: 1;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+    #sendBtn, #loginBtn {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #form {
+      display: none;
+    }
+    #userCount {
+      margin-bottom: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <h2>Chat Instantané</h2>
+    <p id="userCount">0 personne connectée</p>
+
+    <ul id="messages"></ul>
+
+    <!-- Formulaire de nom d'utilisateur -->
+    <form id="usernameForm">
+      <input id="usernameInput" autocomplete="off" placeholder="Entrez votre nom d'utilisateur..." />
+      <button id="loginBtn">Se connecter</button>
+    </form>
+
+    <!-- Formulaire pour envoyer des messages (sera affiché après la connexion) -->
+    <form id="form" action="">
+      <input id="input" autocomplete="off" placeholder="Tapez votre message ici..." />
+      <button id="sendBtn">Envoyer</button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+    const usernameForm = document.getElementById('usernameForm');
+    const usernameInput = document.getElementById('usernameInput');
+    const userCount = document.getElementById('userCount');
+    let username = '';
+
+    // Formulaire de connexion pour le nom d'utilisateur
+    usernameForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (usernameInput.value) {
+        username = usernameInput.value; // Enregistrer le nom d'utilisateur localement
+        socket.emit('set username', username); // Envoyer au serveur
+        usernameForm.style.display = 'none'; // Masquer le formulaire de nom d'utilisateur
+        form.style.display = 'flex'; // Afficher le formulaire de chat
+      }
+    });
+
+    // Envoi de messages avec le nom d'utilisateur
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (input.value) {
+        const timestamp = new Date().toLocaleTimeString(); // Obtenir l'heure actuelle
+        socket.emit('chat message', { user: username, msg: input.value, time: timestamp });
+        input.value = '';
+      }
+    });
+
+    // Réception des messages avec le nom d'utilisateur et l'heure
+    socket.on('chat message', function(data) {
+      const item = document.createElement('li');
+      item.innerHTML = `<span class="username">${data.user}</span>: ${data.msg}<span class="timestamp">${data.time}</span>`;
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    });
+
+    // Mettre à jour le nombre d'utilisateurs connectés
+    socket.on('user count', function(count) {
+      userCount.textContent = `${count} ${count === 1 ? 'personne connectée' : 'personnes connectées'}`;
+    });
+  </script>
+</body>
+</html>
